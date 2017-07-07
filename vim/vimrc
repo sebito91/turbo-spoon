@@ -1,0 +1,339 @@
+" Enable syntax highlighting
+syntax on
+
+set background=dark
+
+" Change color scheme
+colorscheme sborza
+
+set encoding=utf-8
+
+" ward off unexpected things
+set nocompatible
+
+" use auto-indent for known filetypes
+filetype indent plugin on
+filetype plugin on
+
+" allows you to keep undo history for multiple files
+set hidden
+
+" better command-line completion
+set wildmenu
+
+" show partial commands in last line of screen
+set showcmd
+
+" highlight searches
+set hlsearch
+
+" case insensitive search
+set ignorecase
+set smartcase
+
+" allow backspacing over autoindent
+set backspace=indent,eol,start
+
+" enable autowrite
+set autowrite
+
+set nostartofline
+
+set number
+
+set shiftwidth=4
+set softtabstop=4
+set tabstop=4
+set expandtab
+
+if has("cscope")
+    set csprg=/usr/bin/cscope
+    set csto=0
+    set cst
+    set nocsverb
+    " add any database in current directory
+    if filereadable("cscope.out")
+        cs add cscope.out
+        " else add database pointed to by environment
+    elseif $CSCOPE_DB != ""
+        cs add $CSCOPE_DB
+    endif
+
+    set csverb
+endif
+
+" Only do this part when compiled with support for autocommands
+if has("autocmd")
+    " In text files, always limit the width of text to 78 characters
+    autocmd BufRead *.txt set tw=78
+    " When editing a file, always jump to the last cursor position
+    autocmd BufReadPost *
+    \ if line("'\"") > 0 && line ("'\"") <=  line("$") |
+    \ exe "normal! g'\"" |
+    \ endif
+endif
+
+" taken from: http://stackoverflow.com/questions/356126/how-can-you-automatically-remove-trailing-whitespace-in-vim/1618401#1618401
+fun! <SID>StripTrailingWhitespaces()
+    let l = line(".")
+    let c = col(".")
+    %s/\s\+$//e
+    call cursor(l, c)
+endfun
+
+autocmd FileType c,cpp,java,php,ruby,python,perl,html,css,text,jinja,sls,yaml autocmd BufWritePre <buffer> :call <SID>StripTrailingWhitespaces()
+"autocmd FileType * autocmd BufWritePre <buffer> :call <SID>StripTrailingWhitespaces()
+
+autocmd FileType * setlocal formatoptions-=t
+autocmd FileType * setlocal formatoptions-=l
+autocmd FileType * setlocal formatoptions-=c
+autocmd FileType * setlocal formatoptions-=r
+autocmd FileType * setlocal formatoptions-=q
+
+se modeline
+set t_Co=256
+
+" Nice statusbar
+se laststatus=2
+se showtabline=2
+se noshowmode                               "don't show tags like 'INSERT' for mode
+se statusline=
+se statusline+=%2*%-3.3n%0*\                "buffer number
+se statusline+=%f\                          "file name
+
+if has("eval")
+    let g:scm_cache = {}
+    fun! ScmInfo()
+        let l:key = getcwd()
+        if !has_key(g:scm_cache,l:key)
+            if (isdirectory(getcwd() . "/.git"))
+                let g:scm_cache[l:key] = "(" . substitute(readfile(getcwd() . "/.git/HEAD", "", 1)[0],
+                            \ "^.*/", "", "") . ") "
+            else
+                let g:scm_cache[l:key] = ""
+            endif
+        endif
+        return g:scm_cache[l:key]
+    endfun
+    set statusline+=%{ScmInfo()}             " scm info
+endif
+
+se statusline+=%h%1*%m%r%w%0*               " flags
+se statusline+=\[%{strlen(&ft)?&ft:'none'}, " filetype
+se statusline+=%{&fileformat}]              " file format
+se statusline+=%=                           " right align
+se statusline+=%-14.(%l,%c%V%)\ %<%P        " offset
+
+" From: http://robots.thoughtbot.com/post/48275867281/vim-splits-move-faster-and-more-naturally
+se splitbelow
+se splitright
+
+" Map <CTRL>-x to :sh which drops to a shell. <CTRL>-d again to go back to vi
+noremap <C-x> :sh<cr>
+
+au BufNewFile,BufRead *.sls setlocal ft=sls
+au BufNewFile,BufRead *.jinja setlocal ft=yaml
+au BufNewFile,BufRead *.cuda setlocal ft=cuda
+au BufNewFile,BufRead *.go setlocal ft=go
+au BufNewFile,BufRead *.ts setlocal ft=javascript
+
+" Add plugin support using pathogen, from: https://github.com/tpope/vim-pathogen
+execute pathogen#infect()
+
+" Add support for vim-go, from: https://github.com/fatih/vim-go
+let g:go_disable_autoinstall = 0
+let g:go_highlight_types = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_structs = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_build_constraints = 1
+let g:go_fmt_autosave = 1
+let g:go_fmt_fail_silently = 0
+let g:go_list_type = "quickfix"
+let g:go_fmt_command = "goimports"
+
+let g:go_bin_path = "/home/sborza/.gvm/pkgsets/go1.8.3/global/bin"
+
+" automatically show the info of the function/type/etc you're hovering on
+let g:go_auto_type_info = 1
+set updatetime=450
+
+au FileType go nmap <leader>r <Plug>(go-run)
+au FileType go nmap <leader>b <Plug>(go-build)
+au FileType go nmap <leader>t <Plug>(go-test)
+au FileType go nmap <leader>c <Plug>(go-coverage)
+
+au FileType go nmap <Leader>ds <Plug>(go-def-split)
+au FileType go nmap <Leader>dv <Plug>(go-def-vertical)
+au FileType go nmap <Leader>dt <Plug>(go-def-tab)
+
+au FileType go nmap <Leader>gm <Plug>(go-doc)
+au FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
+
+au FileType go nmap <Leader>s <Plug>(go-implements)
+
+au FileType go nmap <Leader>i <Plug>(go-info)
+
+" Syntastic settings -- https://github.com/scrooloose/syntastic
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 0
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 0
+let g:syntastic_check_on_wq = 1
+let g:syntastic_aggregate_errors = 1
+
+" gcc stuffs
+let g:syntastic_c_compiler_options = '-ggdb -O1 -Wall -Werror -pedantic -std=c11 -I/usr/include -I/usr/local/include -L/usr/local/lib -lm -I/usr/include/mysql'
+
+" for combination of syntastic + vim-go
+let g:syntastic_go_checkers = ['go', 'golint', 'gofmt', 'govet', 'gometalinter']
+"let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
+let g:syntastic_python_checkers = ['pep8', 'pydocstyle', 'pylint', 'python', 'flake8']
+let g:syntastic_rst_checkers = ['sphinx']
+let g:syntastic_html_checkers = ['w3']
+let g:syntastic_javascript_checkers = ['jshint']
+"let g:syntastic_python_pylint_args = '--load-plugins pylint_django'
+
+" Adding autocomplete for go, from: https://github.com/Shougo/neocomplete.vim.git
+let g:neocomplete#enable_at_startup = 0
+
+" Adding powerline status
+set rtp+=/home/sborza/src/anaconda/lib/python2.7/site-packages/powerline/bindings/vim 
+
+" golint support
+set rtp+=$GOPATH/src/github.com/golang/lint/misc/vim
+
+" enable the fancy symbols?
+let g:Powerline_symbols = 'fancy'
+
+" Adding powerline fonts for airline
+let g:airline_powerline_fonts = 1
+
+" Fix the conceal issues (if they exist) in vim-json
+let g:vim_json_syntax_conceal = 0
+
+" to fix home/end keys?
+if $TERM =~ '^xterm-color'
+    map <Esc>OH <Home>
+    map! <Esc>OH <Home>
+    map <Esc>OF <End>
+    map! <Esc>OF <End>
+endif
+
+" adding support for tagbar
+nmap <F8> :TagbarToggle<CR>
+let g:tagbar_width = 90
+let g:tagbar_type_go = {
+    \ 'ctagstype' : 'go',
+    \ 'kinds'     : [
+        \ 'p:package',
+        \ 'i:imports:1',
+        \ 'c:constants',
+        \ 'v:variables',
+        \ 't:types',
+        \ 'n:interfaces',
+        \ 'w:fields',
+        \ 'e:embedded',
+        \ 'm:methods',
+        \ 'r:constructor',
+        \ 'f:functions'
+    \ ],
+    \ 'sro' : '.',
+    \ 'kind2scope' : {
+        \ 't' : 'ctype',
+        \ 'n' : 'ntype'
+    \ },
+    \ 'scope2kind' : {
+        \ 'ctype' : 't',
+        \ 'ntype' : 'n'
+    \ },
+    \ 'ctagsbin'  : 'gotags',
+    \ 'ctagsargs' : '-sort -silent'
+    \ }
+
+
+" adding support for NERDtree
+map <C-n> :NERDTreeToggle<CR>
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+" stop jumping around when searching
+set noincsearch
+
+" Set modifiable?
+set modifiable
+
+" enable the cursor for line numbers
+set cursorline
+
+" set nospellchecking just in case
+set nospell
+
+" lhs comments
+map ,# :s/^/#/<CR>:nohlsearch<CR>
+map ,/ :s/^/\/\//<CR>:nohlsearch<CR>
+map ,> :s/^/> /<CR>:nohlsearch<CR>
+map ," :s/^/\"/<CR>:nohlsearch<CR>
+map ,% :s/^/%/<CR>:nohlsearch<CR>
+map ,! :s/^/!/<CR>:nohlsearch<CR>
+map ,; :s/^/;/<CR>:nohlsearch<CR>
+map ,- :s/^/--/<CR>:nohlsearch<CR>
+map ,c :s/^\/\/\\|^--\\|^> \\|^[#"%!;]//<CR>:nohlsearch<CR>
+
+" wrapping comments
+map ,* :s/^\(.*\)$/\/\* \1 \*\//<CR>:nohlsearch<CR>
+map ,( :s/^\(.*\)$/\(\* \1 \*\)/<CR>:nohlsearch<CR>
+map ,< :s/^\(.*\)$/<!-- \1 -->/<CR>:nohlsearch<CR>
+map ,d :s/^\([/(]\*\\|<!--\) \(.*\) \(\*[/)]\\|-->\)$/\2/<CR>:nohlsearch<CR>
+
+"
+" YouCompleteMe options
+"
+
+let g:ycm_register_as_syntastic_checker = 1 "default 1
+let g:ycm_show_diagnostics_ui = 0 "default 1
+
+"will put icons in Vim's gutter on lines that have a diagnostic set.
+"Turning this off will also turn off the YcmErrorLine and YcmWarningLine
+"highlighting
+let g:ycm_enable_diagnostic_signs = 1
+let g:ycm_enable_diagnostic_highlighting = 0
+let g:ycm_always_populate_location_list = 1 "default 0
+let g:ycm_open_loclist_on_ycm_diags = 1 "default 1
+let g:ycm_min_num_of_chars_for_completion = 4
+let g:ycm_allow_changing_updatetime = 0
+
+let g:ycm_complete_in_strings = 1 "default 1
+let g:ycm_collect_identifiers_from_tags_files = 0 "default 0
+let g:ycm_path_to_python_interpreter = '' "default ''
+
+let g:ycm_server_use_vim_stdout = 0 "default 0 (logging to console)
+let g:ycm_server_log_level = 'info' "default info
+
+let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/.ycm_extra_conf.py'
+let g:ycm_confirm_extra_conf = 1
+
+let g:ycm_goto_buffer_command = 'same-buffer' "[ 'same-buffer', 'horizontal-split', 'vertical-split', 'new-tab' ]
+let g:ycm_filetype_whitelist = { '*': 1 }
+let g:ycm_key_invoke_completion = '<C-Space>'
+
+nnoremap <F11> :YcmForceCompileAndDiagnostics <CR>
+
+" vim-godef
+let g:godef_split=2 " fork the def into a new tab
+
+" rainbow parens
+let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
+
+" test out kernel coding
+let g:linuxsty_patterns = [ "/home/sborza/src/linux/" ]
+
+" add NERDTree at boot
+"autocmd VimEnter * NERDTree
+"autocmd VimEnter * nested :call tagbar#autoopen(1)
+"autocmd FileType * nested :call tagbar#autoopen(0)
+"autocmd BufEnter * nested :call tagbar#autoopen(0)
+"autocmd VimEnter * wincmd p
