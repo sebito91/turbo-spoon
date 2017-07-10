@@ -1,0 +1,61 @@
+{
+	"segments": {
+		"right": [
+			{
+				"function": "powerline.segments.common.sys.uptime",
+				"priority": 50
+			},
+			{
+				"function": "powerline.segments.common.sys.system_load",
+				"priority": 50
+			},
+            {
+                "function": "powerline.segments.common.sys.cpu_load_percent"
+            },
+            {
+                "function": "powerline.segments.common.wthr.weather",
+                "args": {
+                    "location_query": "chicago, illinois",
+                    "unit": "F",
+                    "icons": {
+                            "tornado":                 "tornado 🌪",
+                            "hurricane":               "hurricane 🌀{",
+                            "showers":                 "showers ☔ ",
+                            "scattered_showers":       "scattered ☔ ",
+                            "thunderstorms":           "thunders 🌩",
+                            "isolated_thunderstorms":  "small thunders 🌩",
+                            "scattered_thunderstorms": "large thunders 🌩",
+                            "dust":                    "dusty 🌫",
+                            "fog":                     "foggy 🌫",
+                            "cold":                    "cold ❄",
+                            "partly_cloudy_day":       "partlycloudy 🌤",
+                            "mostly_cloudy_day":       "cloudy 🌥",
+                            "sun":                     "sun 🌣",
+                            "hot":                     "hot ♨",
+                            "day":                     "day ☀",
+                            "blustery":                "blustery ⚑",
+                            "rainy":                   "rainy ☂",
+                            "cloudy":                  "cloudy ☁",
+                            "snowy":                   "snowy ☃",
+                            "stormy":                  "stormy ☈",
+                            "foggy":                   "foggy 🌁 ",
+                            "sunny":                   "sunny 🌣",
+                            "night":                   "night ☾",
+                            "windy":                   "windy ☴",
+                            "not_available":           "n/a �",
+                            "unknown":                 "unknown ⚠"
+                    }
+                }
+            },
+			{
+				"function": "powerline.segments.common.bat.battery"
+			},
+			{
+				"function": "powerline.segments.common.net.external_ip"
+			},
+			{
+				"function": "powerline.segments.common.net.hostname"
+			}
+		]
+	}
+}
