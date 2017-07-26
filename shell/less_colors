@@ -1,0 +1,8 @@
+export GROFF_NO_SGR=yes #https://lists.fedoraproject.org/pipermail/users/2014-July/452173.html
+export LESS_TERMCAP_mb=$(printf '\E[01;31m') # enter blinking mode
+export LESS_TERMCAP_md=$(printf '\E[0;38;5;74m') # enter double-bright mode
+export LESS_TERMCAP_me=$(printf '\E[0m') # turn off all appearance modes (mb, md, so, us)
+export LESS_TERMCAP_se=$(printf '\E[0m') # leave standout mode
+export LESS_TERMCAP_so=$(printf '\E[03;93m') # enter standout mode
+export LESS_TERMCAP_ue=$(printf '\E[0m') # leave underline mode
+export LESS_TERMCAP_us=$(printf '\E[04;38;5;250m') # enter underline mode
